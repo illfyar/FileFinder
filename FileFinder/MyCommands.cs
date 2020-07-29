@@ -7,6 +7,9 @@ using System.Windows.Input;
 
 namespace FileFinder
 {
+    /// <summary>
+    /// Используется для создания свойств комманд во ViewModel
+    /// </summary>
     public class MyCommands : ICommand
     {
         private Action<object> execute;

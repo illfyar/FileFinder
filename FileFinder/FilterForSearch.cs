@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileFinder
 {
+    /// <summary>
+    /// Содержит данные фильтра поиска
+    /// </summary>
     struct FilterForSearch
     {
         public string Name { get; set; }

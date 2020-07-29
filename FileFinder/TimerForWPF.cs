@@ -8,11 +8,25 @@ using System.Windows.Threading;
 
 namespace FileFinder
 {
+    /// <summary>
+    /// Я не нашел нормального способа вести 
+    /// отсчет времени поиска поэтому создал этот класс
+    /// и то он почему то опаздывает на 1 секунду 
+    /// с началом отсчета
+    /// </summary>
     class TimerForWPF
     {
+        /// <summary>
+        /// Событие изменения времени выполнения
+        /// </summary>
+        /// <param name="value"></param>
         public delegate void EditRunningTimeString(string value);
         public event EditRunningTimeString EventEditRunningTimeString;
         private DispatcherTimer dT = new DispatcherTimer();
+        /// <summary>
+        /// строковая запись отсчета времени, пытался использовать StringBuilder но 
+        /// не смог его прикрутить к WPF
+        /// </summary>
         private string runningTimeString = "00 : 00 : 00";
         public string RunningTimeString { 
             get 
@@ -61,6 +75,11 @@ namespace FileFinder
         {
             Seconds++;
         }
+        /// <summary>
+        /// Для увеличения значений минут и часов
+        /// </summary>
+        /// <param name="time1"></param>
+        /// <param name="time2"></param>
         private void CheckTime(ref int time1, ref int time2)
         {
             if (time1 == 59)

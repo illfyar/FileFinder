@@ -12,11 +12,18 @@ using System.Windows.Threading;
 
 namespace FileFinder
 {
+    //Статус выполнения поиска
     enum SearchStatus {NotRun,Run,Pause}
     class Model
     {
-        private FileOrFolder rootFileOrFolder;
+        /// <summary>
+        /// Событие для паузы во время поиска
+        /// </summary>
         public static ManualResetEvent PauseEvent = new ManualResetEvent(true);
+        /// <summary>
+        /// Корневой каталог
+        /// </summary>
+        private FileOrFolder rootFileOrFolder;        
         public FileOrFolder RootFileOrFolder {
             get 
             {
@@ -25,13 +32,24 @@ namespace FileFinder
             {
                 rootFileOrFolder = value;
             } }
+        /// <summary>
+        /// фильтр описка
+        /// </summary>
         public FilterForSearch FilterForSearch { get; set; }
+        /// <summary>
+        /// Содержит имя файла
+        /// который в данный момент обрабатывается
+        /// </summary>
         private string fileNameInProcess;
         public string FileNameInProcess { get { return fileNameInProcess; } set 
             {
                 fileNameInProcess = value;
                 EventEditFileNameInProcess(fileNameInProcess);
             } }
+        /// <summary>
+        /// Событие при изменении FileNameInProcess
+        /// </summary>
+        /// <param name="value"></param>
         public delegate void EditFileNameInProcess(string value);
         public event EditFileNameInProcess EventEditFileNameInProcess;
         Mutex Mutex { get; set; } = new Mutex();
@@ -41,6 +59,10 @@ namespace FileFinder
         {
             
         }
+        /// <summary>
+        /// Стартовый метод поиска для внешнего вызова
+        /// </summary>
+        /// <returns>bool - если false то выполнение было прервано</returns>
         public async Task<bool> SearchRun()
         {
             try
@@ -61,12 +83,24 @@ namespace FileFinder
             }            
             return true;
         }
-        public async Task<bool> SearchFileOrFolder(FileOrFolder fileOrFolder)
+        /// <summary>
+        /// стартовый метод поиска для внутреннего вызова,
+        ///  поиск в поиске
+        /// </summary>
+        /// <param name="fileOrFolder"></param>
+        /// <returns>bool</returns>
+        private async Task<bool> SearchFileOrFolder(FileOrFolder fileOrFolder)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
             fileOrFolder = await Search(fileOrFolder, cancellationToken);
             return true;
         }
+        /// <summary>
+        /// Стартовый метод поиска
+        /// </summary>
+        /// <param name="fileOrFolder"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Task<FileOrFolder>, если null то выполнение было прервано</returns>
         public async Task<FileOrFolder> Search(FileOrFolder fileOrFolder,CancellationToken cancellationToken)
         {
             try
@@ -85,11 +119,16 @@ namespace FileFinder
                 return null;
             }
         }
-         ObservableCollection<FileOrFolder> FillChildren(FileOrFolder fileOrFolder, CancellationToken cancellationToken)
+        /// <summary>
+        /// Заполнение коллекции FileOrFolder дочерних файлов и папок
+        /// </summary>
+        /// <param name="fileOrFolder"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ObservableCollection<FileOrFolder>, если null то выполнение быол прервано</returns>
+        ObservableCollection<FileOrFolder> FillChildren(FileOrFolder fileOrFolder, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                Console.WriteLine($"Поток {Thread.CurrentThread.ManagedThreadId} отменён");
                 return null;
             }
             PauseEvent.WaitOne();
@@ -114,7 +153,12 @@ namespace FileFinder
             Task.WaitAll(tasks.ToArray());
             return childFileOrFolders;
         }
-        void SelectFiles(FileInfo[] fileInfos, out ObservableCollection<FileOrFolder> fileOrFolders)
+        /// <summary>
+        /// Заполнение коллекции FileOrFolder
+        /// </summary>
+        /// <param name="fileInfos"></param>
+        /// <param name="fileOrFolders"></param>
+        private void SelectFiles(FileInfo[] fileInfos, out ObservableCollection<FileOrFolder> fileOrFolders)
         {
             Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
             
@@ -145,6 +189,12 @@ namespace FileFinder
            }).ToList();
             fileOrFolders = FileOrFolder.FillResultCollection(selectedFileInfo);
         }
+        /// <summary>
+        /// Поиск внутри файла указанного на форме содержимого
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fitr"></param>
+        /// <returns>bool, если true содержимое обнаруженно</returns>
         bool FindText(string str, string fitr)
         {
             string regstr = fitr.Replace("*", "(\\w*)");
@@ -152,16 +202,25 @@ namespace FileFinder
             MatchCollection matchCollection = regex.Matches(str);
             return matchCollection.Count > 0;
         }
+        /// <summary>
+        /// Пауза поиска
+        /// </summary>
         public void Pause()
         {
             SearchStatus = SearchStatus.Pause;
             PauseEvent.Reset();
         }
+        /// <summary>
+        /// Продолжить поиск
+        /// </summary>
         public void Resume()
         {
             SearchStatus = SearchStatus.Run;
             PauseEvent.Set();
         }
+        /// <summary>
+        /// Остановить поиск
+        /// </summary>
         public void Stop()
         {
             if (SearchStatus == SearchStatus.Pause)

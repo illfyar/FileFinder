@@ -19,8 +19,17 @@ namespace FileFinder
 {
     class ViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        /// модель выполгнения поиска
+        /// </summary>
         Model Model { get; set; }
+        /// <summary>
+        /// коллекция для дерева значений на форме
+        /// </summary>
         public ObservableCollection<FileOrFolder> FileOrFolder { get; set; } = new ObservableCollection<FileOrFolder>();
+        /// <summary>
+        /// Шаблон имени файла для описка
+        /// </summary>
         private string templateNameFile;
         public string TemplateNameFile { get
             {
@@ -30,6 +39,9 @@ namespace FileFinder
                 templateNameFile = value;
                 OnPropertyChanged("templateNameFile");
             } }
+        /// <summary>
+        /// Содержимое файла, которе надо найти
+        /// </summary>
         private string contentFile;
         public string ContentFile
         {
@@ -43,7 +55,13 @@ namespace FileFinder
                 OnPropertyChanged("contentFile");
             }
         }
+        /// <summary>
+        /// Таймер отсчета времени поиска
+        /// </summary>
         public TimerForWPF TimerForWPF { get; set; } = new TimerForWPF();
+        /// <summary>
+        /// Свойство для отображения времени поиска
+        /// </summary>
         private string runningTimeString = "00 : 00 : 00";
         public string RunningTimeString { get { return runningTimeString; }
             set 
@@ -52,6 +70,9 @@ namespace FileFinder
                 OnPropertyChanged("runningTimeString");
             }
         }
+        /// <summary>
+        /// для отображения текущего обрабатываемого файла
+        /// </summary>
         private string fileNameInProcess;
         public string FileNameInProcess { get
             {
@@ -61,6 +82,9 @@ namespace FileFinder
                 fileNameInProcess = value;
                 OnPropertyChanged("fileNameInProcess");
             } }
+        /// <summary>
+        /// для отображения корневой папки
+        /// </summary>
         private string rootFolder;
         public string RootFolder
         {

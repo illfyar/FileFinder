@@ -73,7 +73,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FolderBrouseDialog.cs" />
     <Compile Include="MyCommands.cs" />
     <Compile Include="TimerForWPF.cs" />
     <Compile Include="ViewModel.cs" />
