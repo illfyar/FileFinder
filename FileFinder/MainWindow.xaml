@@ -1,0 +1,84 @@
+﻿<Window x:Class="FileFinder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:local="clr-namespace:FileFinder"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="1" Width="300" Orientation="Horizontal">
+            <Button Width="100" Content="Поиск">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding Find}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button x:Name="Pause" Width="100" Content="Пауза" BorderBrush="#FF8B8B8B" Foreground="Black" OpacityMask="Black" Background="#FFDDDDDD">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding Pause}" 
+                            CommandParameter="{Binding ElementName=Pause}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Width="100" Content="Стоп">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding Stop}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label  Content="Искать в" Width="85" HorizontalAlignment="Left"/>
+            <TextBox  x:Name="RootFolder" Width="500" Margin="3,3,0,3" Text="{Binding RootFolder,
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Выбрать папку" Margin="0,3,3,3">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding OpenFolder}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Label  Content="Шаблон" Width="85"/>
+            <TextBox  Width="500" Margin="3" Text="{Binding TemplateNameFile}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Label  Content="Содержимое" Width="85"/>
+            <TextBox  Width="650" Margin="3" Text="{Binding ContentFile}"/>
+        </StackPanel>
+        <TreeView x:Name="TrVwFileAndFolder" Grid.Row="5" ItemsSource="{Binding FileOrFolder,
+            UpdateSourceTrigger=PropertyChanged}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding ChldFileOrFolders,
+                    UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <StackPanel Orientation="Horizontal" Grid.Row="6">
+            <Label Content="Время выполнения: "/>
+            <Label 
+                Content="{Binding RunningTimeString, Mode=OneWay, 
+                UpdateSourceTrigger=PropertyChanged}" Width="90"/>
+            <Label Content="Обрабатваемый файл"/>
+            <Label 
+                Content="{Binding FileNameInProcess, Mode=OneWay, 
+                UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+        </StackPanel>
+    </Grid>
+</Window>
