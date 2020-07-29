@@ -134,7 +134,7 @@ namespace FileFinder
             PauseEvent.WaitOne();
             ObservableCollection<FileOrFolder> childFileOrFolders = new ObservableCollection<FileOrFolder>();
             DirectoryInfo currentDirectoryInfo = new DirectoryInfo(fileOrFolder.Path);
-            SelectFiles(currentDirectoryInfo.GetFiles(FilterForSearch.Name), out childFileOrFolders);
+            SelectFiles(currentDirectoryInfo.GetFiles(FilterForSearch.Name), out childFileOrFolders, cancellationToken);
             List<FileOrFolder> listDirectoryFileOrFolder = currentDirectoryInfo.GetDirectories().Select(c =>            
                 new FileOrFolder
                 {
@@ -158,7 +158,8 @@ namespace FileFinder
         /// </summary>
         /// <param name="fileInfos"></param>
         /// <param name="fileOrFolders"></param>
-        private void SelectFiles(FileInfo[] fileInfos, out ObservableCollection<FileOrFolder> fileOrFolders)
+        private void SelectFiles(FileInfo[] fileInfos, out ObservableCollection<FileOrFolder> fileOrFolders, 
+            CancellationToken cancellationToken)
         {
             Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
             
@@ -169,6 +170,10 @@ namespace FileFinder
             }
             var selectedFileInfo = fileInfos.Where(c =>
            {
+               if (cancellationToken.IsCancellationRequested)
+               {
+                   return false;
+               }
                Thread.Sleep(new Random().Next(2000,5000));//TODO для эмуляции загруженности
                Mutex.WaitOne();
                FileNameInProcess = c.Name;
